@@ -2,10 +2,13 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 import yfinance as yf
+import os
+
 
 def get_stock_data():
     SHEET_NAME = "Shares_Tracker"
-    CREDENTIALS_FILE = "../credentials.json"
+    CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_PATH", "credentials.json")
+    # CREDENTIALS_FILE = "../credentials.json"
 
     try:
         scopes = [
