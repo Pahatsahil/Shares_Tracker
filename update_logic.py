@@ -3,13 +3,27 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime
 import yfinance as yf
 import os
+import base64
+import tempfile
 
+def load_credentials():
+    encoded = os.getenv("GOOGLE_CREDENTIALS_JSON")
+    if not encoded:
+        raise Exception("GOOGLE_CREDENTIALS_JSON not set in environment")
 
+    decoded = base64.b64decode(encoded)
+    
+    # Write to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=".json") as f:
+        f.write(decoded.decode())
+        return f.name  # returns the temp file path
+    
+    
 def get_stock_data():
     SHEET_NAME = "Shares_Tracker"
-    CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_PATH", "credentials.json")
-    # CREDENTIALS_FILE = "../credentials.json"
+    CREDENTIALS_FILE = load_credentials()
 
+    # print(len(CREDENTIALS_FILE))
     try:
         scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
@@ -40,7 +54,7 @@ def get_stock_data():
 
 def update_stock_prices():
     SHEET_NAME = "Shares_Tracker"
-    CREDENTIALS_FILE = "../credentials.json"
+    CREDENTIALS_FILE = load_credentials()
 
     try:
         scopes = [

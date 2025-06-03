@@ -1,5 +1,7 @@
 from flask import Flask, render_template, jsonify
 from update_logic import update_stock_prices, get_stock_data
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 
