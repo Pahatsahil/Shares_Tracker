@@ -37,7 +37,7 @@ def get_stock_data():
     
     rows = sheet.get_all_values()
     headers = rows[0]
-    data_rows = rows[2:]
+    data_rows = rows[1:]
     stocks = []
     for row in data_rows:
         stocks.append({
