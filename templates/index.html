@@ -36,7 +36,10 @@
         const data = await res.json();
         const tbody = document.querySelector('#stockTable tbody');
         tbody.innerHTML = '';  // Clear old rows
-
+        if (!Array.isArray(data)) {
+              console.error("Expected array, got:", data);
+              return;
+            }
         data.forEach(stock => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
