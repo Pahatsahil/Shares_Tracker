@@ -43,9 +43,9 @@ def get_stock_data():
         stocks.append({
             "date": row[0],
             "name": row[1],
-            "quantity": row[3],
-            "buy_price": row[4],
-            "current_price": row[5],
+            # "quantity": row[3],
+            "buy_price": row[6],
+            "current_price": row[7],
             "profit_loss": row[8],
             "profit_loss_percent": row[9],
         })
@@ -75,6 +75,8 @@ def update_stock_prices():
         today = datetime.now().strftime("%-d %B")
 
         total_investment = 0
+        total_buy_price = 0
+        total_current_price = 0
         total_current_value = 0
         total_profit_loss = 0
         total_quantity = 0
@@ -87,6 +89,7 @@ def update_stock_prices():
             try:
                 qty = float(row[3])
                 buy_price = float(row[4])
+                current_price = float(row[5])
             except ValueError:
                 log_messages.append(f"⚠️ Skipping row {i} due to invalid qty/buy price.")
                 continue
@@ -114,6 +117,8 @@ def update_stock_prices():
             total_current_value += current_value
             total_profit_loss += profit_loss
             total_quantity += qty
+            total_buy_price += buy_price
+            total_current_price += current_price
 
             batch_updates.extend([
                 {'range': f'F{i}', 'values': [[round(live_price, 2)]]},
@@ -131,6 +136,8 @@ def update_stock_prices():
         batch_updates.extend([
             {'range': f'B{total_row_index}', 'values': [["Total"]]},
             {'range': f'D{total_row_index}', 'values': [[round(total_quantity, 2)]]},
+            {'range': f'E{total_row_index}', 'values': [[round(total_buy_price, 2)]]},
+            {'range': f'F{total_row_index}', 'values': [[round(total_current_price, 2)]]},
             {'range': f'G{total_row_index}', 'values': [[round(total_investment, 2)]]},
             {'range': f'H{total_row_index}', 'values': [[round(total_current_value, 2)]]},
             {'range': f'I{total_row_index}', 'values': [[round(total_profit_loss, 2)]]},

@@ -15,9 +15,8 @@
       <tr>
         <th>Date</th>
         <th>Name</th>
-        <th>Quantity</th>
-        <th>Buy Price</th>
-        <th>Current Price</th>
+        <th>Investment</th>
+        <th>Current value</th>
         <th>Profit / Loss</th>
         <th>Profit / Loss %</th>
       </tr>
@@ -44,12 +43,11 @@
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${stock.date}</td>
-            <td>${stock.name}</td>
-            <td>${stock.quantity}</td>
-            <td>${stock.buy_price}</td>
-            <td>${stock.current_price}</td>
-            <td>${stock.profit_loss}</td>
-            <td>${stock.profit_loss_percent}%</td>
+            <td>${stock.name == 'Total' ? '' : stock.name}</td>
+            <td>${stock.name == 'Total' ? parseInt(stock.buy_price) : stock.buy_price}</td>
+            <td>${stock.name == 'Total' ? parseInt(stock.current_price) : stock.current_price}</td>
+            <td>${stock.name == 'Total' ? parseInt(stock.profit_loss) : stock.profit_loss}</td>
+            <td>${stock.profit_loss_percent ? stock.profit_loss_percent+'%' : ''}</td>
           `;
           tbody.appendChild(tr);
         });
