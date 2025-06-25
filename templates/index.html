@@ -1,53 +1,139 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Stock Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Stock Tracker | Portfolio Project</title>
   <style>
-    table { border-collapse: collapse; width: 80%; margin: auto; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    th { background-color: #f4f4f4; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #222;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    main {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .loader {
+      display: none;
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #333;
+      color: #fff;
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
-  <h2 style="text-align:center;">Live Stock Tracker</h2>
-  <table id="stockTable">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Name</th>
-        <th>Investment</th>
-        <th>Current value</th>
-        <th>Profit / Loss</th>
-        <th>Profit / Loss %</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- rows will be inserted here -->
-    </tbody>
-  </table>
-  <form action="{{ url_for('update') }}">
-    <button type="submit">🔄 Update Now</button>
-  </form>
+  <header>
+    <h1>📊 Live Stock Tracker</h1>
+    <p>Track your investments and performance in real-time</p>
+  </header>
+
+  <main>
+    <div class="loader" id="loader">🔄 Updating data, please wait...</div>
+    <table id="stockTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Name</th>
+          <th>Investment</th>
+          <th>Current Value</th>
+          <th>Profit / Loss</th>
+          <th>Profit / Loss %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will populate here -->
+      </tbody>
+    </table>
+
+    <form action="{{ url_for('update') }}"  onsubmit="return showLoader()">
+      <button type="submit">🔄 Update Now</button>
+    </form>
+  </main>
+
+  <footer>
+    Made with ❤️ by Sahil | Data Scientist Enthusiast
+  </footer>
+
   <script>
+     function showLoader() {
+      document.getElementById('stockTable').style.display = 'none';
+      document.getElementById('loader').style.display = 'block';
+      return true;
+    }
+
     async function fetchStockData() {
       try {
         const res = await fetch('/data');
         const data = await res.json();
         const tbody = document.querySelector('#stockTable tbody');
-        tbody.innerHTML = '';  // Clear old rows
+        tbody.innerHTML = '';
+
         if (!Array.isArray(data)) {
-              console.error("Expected array, got:", data);
-              return;
-            }
+          console.error("Expected array, got:", data);
+          return;
+        }
+
         data.forEach(stock => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${stock.date}</td>
-            <td>${stock.name == 'Total' ? '' : stock.name}</td>
-            <td>${stock.name == 'Total' ? parseInt(stock.buy_price) : stock.buy_price}</td>
-            <td>${stock.name == 'Total' ? parseInt(stock.current_price) : stock.current_price}</td>
-            <td>${stock.name == 'Total' ? parseInt(stock.profit_loss) : stock.profit_loss}</td>
-            <td>${stock.profit_loss_percent ? stock.profit_loss_percent+'%' : ''}</td>
+            <td>${stock.name === 'Total' ? '' : stock.name}</td>
+            <td>${stock.name === 'Total' ? parseInt(stock.buy_price) : stock.buy_price}</td>
+            <td>${stock.name === 'Total' ? parseInt(stock.current_price) : stock.current_price}</td>
+            <td>${stock.name === 'Total' ? parseInt(stock.profit_loss) : stock.profit_loss}</td>
+            <td>${stock.profit_loss_percent ? stock.profit_loss_percent + '%' : ''}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -56,11 +142,8 @@
       }
     }
 
-    // Fetch data on page load
     fetchStockData();
-
-    // Optional: Refresh every 5 mins
-    setInterval(fetchStockData, 300000);
+    setInterval(fetchStockData, 300000); // Refresh every 5 minutes
   </script>
 </body>
 </html>
